@@ -1,0 +1,19 @@
+{
+    "name": "xenioushk/bwl-plugin-api",
+    "description": "Plugin api for BWL plugins.",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Xenioushk\\BwlPluginApi\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Md Mahbub Alam Khan",
+            "email": "hkhan.cse@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {}
+}
