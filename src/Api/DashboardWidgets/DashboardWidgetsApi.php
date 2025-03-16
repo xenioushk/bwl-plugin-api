@@ -30,7 +30,7 @@ class DashboardWidgetsApi
 	/**
 	 * Initialize Dashboard Widgets.
 	 */
-	private function initialize()
+	public function initialize()
 	{
 		add_action('wp_dashboard_setup', [$this, 'register_all_dashboard_widgets']);
 	}
