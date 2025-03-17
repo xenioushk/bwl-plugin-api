@@ -71,38 +71,42 @@ class CptApi
 
 		foreach ($tax_settings as $tax) {
 
+			$custom_labels = $tax['labels'] ?? [];
+
+			$labels = [
+				'singular_name'              => $custom_labels['singular_name'] ?? $tax['tax_title'],
+				'all_items'                  => $custom_labels['all_items'] ?? "All {$tax['tax_title']}",
+				'edit_item'                  => $custom_labels['edit_item'] ?? "Edit {$tax['tax_title']}",
+				'view_item'                  => $custom_labels['view_item'] ?? "View {$tax['tax_title']}",
+				'update_item'                => $custom_labels['update_item'] ?? "Update {$tax['tax_title']}",
+				'add_new_item'               => $custom_labels['add_new_item'] ?? "Add New {$tax['tax_title']}",
+				'new_item_name'              => $custom_labels['new_item_name'] ?? "New Title",
+				'search_items'               => $custom_labels['search_items'] ?? "Search {$tax['tax_title']}",
+				'popular_items'              => $custom_labels['popular_items'] ?? "Popular {$tax['tax_title']}",
+				'separate_items_with_commas' => $custom_labels['separate_items_with_commas'] ?? "Separate with comma",
+				'choose_from_most_used'      => $custom_labels['choose_from_most_used'] ?? "Choose from most used {$tax['tax_title']}",
+				'not_found'                  => $custom_labels['not_found'] ??  "Nothing found",
+			];
+
+
 			$this->tax_settings[] = [
 
 				$tax['tax_slug'],
 				[$cpt_info['post_type']],
 				[
-					'label'             => $tax['tax_title'] ?? esc_html__('Taxonomy Title', 'bwl_ptmn'),
+					'label'             => $tax['tax_title'] ?? 'Taxonomy Title',
 					'hierarchical'      => $tax['hierarchical'] ?? true,
-					'query_var'         => true,
-					'public'            => true,
+					'query_var'         => $tax['query_var'] ?? true,
+					'show_in_rest'      => $tax['show_in_rest'] ?? true,
+					'public'            => $tax['public'] ?? true,
 					'rewrite'           => [
 						'slug' => $tax['custom_tax_slug'] ?? $cpt_info['post_type'] . '-' . $tax['tax_slug'],
 					],
 					'show_admin_column' => true,
-					'show_in_rest'      => $tax['show_in_rest'] ?? true,
-					'labels'            => [
-						'singular_name'              => $tax['tax_title'],
-						'all_items'                  => esc_html__('All', 'bwl_ptmn') . ' ' . $tax['tax_title'],
-						'edit_item'                  => esc_html__('Edit', 'bwl_ptmn') . ' ' . $tax['tax_title'],
-						'view_item'                  => esc_html__('View', 'bwl_ptmn') . ' ' . $tax['tax_title'],
-						'update_item'                => esc_html__('Update', 'bwl_ptmn') . ' ' . $tax['tax_title'],
-						'add_new_item'               => esc_html__('Add New', 'bwl_ptmn') . ' ' . $tax['tax_title'],
-						'new_item_name'              => esc_html__('New Title', 'bwl_ptmn'),
-						'search_items'               => esc_html__('Search', 'bwl_ptmn') . ' ' . $tax['tax_title'],
-						'popular_items'              => esc_html__('Popular', 'bwl_ptmn') . ' ' . $tax['tax_title'],
-						'separate_items_with_commas' => esc_html__('Separate with comma', 'bwl_ptmn'),
-						'choose_from_most_used'      => esc_html__('Choose from most used', 'bwl_ptmn') . ' ' . $tax['tax_title'],
-						'not_found'                  => esc_html__('Nothing found', 'bwl_ptmn'),
-					],
+					'labels'            => $labels,
 				],
 			];
 		}
-
 		return $this;
 	}
 
@@ -114,18 +118,20 @@ class CptApi
 
 		foreach ($this->cpt_settings as $cpt) {
 
+			$custom_labels = $cpt['labels'] ?? [];
+
 			$labels = [
-				'name'               => esc_html__('All', 'bwl_ptmn') . ' ' . $cpt['menu_name'],
+				'name'               =>  $custom_labels['name'] ?? "All {$cpt['menu_name']}",
 				'singular_name'      => $cpt['singular_name'] ?? $cpt['menu_name'],
-				'add_new'            => esc_html__('Add New', 'bwl_ptmn') . ' ' . $cpt['singular_name'],
-				'add_new_item'       => esc_html__('Add New', 'bwl_ptmn'),
-				'edit_item'          => esc_html__('Edit', 'bwl_ptmn') . ' ' . $cpt['singular_name'],
-				'new_item'           => esc_html__('New', 'bwl_ptmn') . ' ' . $cpt['singular_name'],
-				'all_items'          => esc_html__('All', 'bwl_ptmn') . ' ' . $cpt['singular_name'] . ' ' . esc_html__('Items', 'bwl_ptmn'),
-				'view_item'          => esc_html__('View', 'bwl_ptmn') . ' ' . $cpt['menu_name'] . ' ' . esc_html__('Items', 'bwl_ptmn'),
-				'search_items'       => esc_html__('Search', 'bwl_ptmn') . ' ' . $cpt['menu_name'] . ' ' . esc_html__('Items', 'bwl_ptmn'),
-				'not_found'          => esc_html__('No item found', 'bwl_ptmn'),
-				'not_found_in_trash' => esc_html__('No item found in trash', 'bwl_ptmn'),
+				'add_new'            =>  $custom_labels['add_new'] ?? "Add New {$cpt['singular_name']}",
+				'add_new_item'       => $custom_labels['add_new_item'] ?? "Add New {$cpt['singular_name']}",
+				'edit_item'       => $custom_labels['edit_item'] ?? "Edit {$cpt['singular_name']}",
+				'new_item'       => $custom_labels['new_item'] ?? "New {$cpt['singular_name']}",
+				'all_items'       => $custom_labels['all_items'] ?? "All {$cpt['singular_name']} Items",
+				'view_item'       => $custom_labels['view_item'] ?? "View {$cpt['menu_name']} Items",
+				'search_items'       => $custom_labels['search_items'] ?? "Search {$cpt['menu_name']} Items",
+				'not_found'       => $custom_labels['not_found'] ?? "No item found",
+				'not_found_in_trash'       => $custom_labels['not_found_in_trash'] ?? "No item found in trash",
 				'parent_item_colon'  => '',
 				'menu_name'          => $cpt['menu_name'],
 			];
