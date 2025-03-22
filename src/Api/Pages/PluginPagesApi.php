@@ -13,11 +13,11 @@ class PluginPagesApi
 {
 
 	/**
-	 * Plugin post type.
+	 * Parent menu from the admin panel.
 	 *
 	 * @var string
 	 */
-	public $plugin_post_type;
+	public $parent_menu;
 
 	/**
 	 * Plugin page settings.
@@ -39,16 +39,19 @@ class PluginPagesApi
 	 * @var string
 	 */
 	public $plugin_menu_link;
+	public $specific;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param string $post_type Post type.
+	 * @param string $parent_menu Could be a Post type or it could be specific page.
+	 * @param bool $specific Specific page or not.
+	 * @example $parent_menu="settings.php"
 	 */
-	public function __construct($post_type = '')
+	public function __construct($parent_menu = '', $specific = false)
 	{
-
-		$this->plugin_post_type = $post_type;
+		$this->parent_menu = $parent_menu;
+		$this->specific = $specific;
 	}
 
 	/**
@@ -58,7 +61,11 @@ class PluginPagesApi
 	{
 		if (! empty($this->plugin_pages_settings)) {
 
-			$this->plugin_menu_link = 'edit.php?post_type=' . $this->plugin_post_type;
+			if ($this->specific) {
+				$this->plugin_menu_link = $this->parent_menu;
+			} else {
+				$this->plugin_menu_link = 'edit.php?post_type=' . $this->parent_menu;
+			}
 
 			add_action('admin_menu', [$this, 'add_plugin_pages_api']);
 		}
