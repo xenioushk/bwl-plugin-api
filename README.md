@@ -3,6 +3,7 @@
 👉 **1.0.4 (22.03.25)**
 
 - Upgraded Plugin Pages API. 🙌
+- Added View API. 🎉
 
 👉 **1.0.3 (22.03.25)**
 
