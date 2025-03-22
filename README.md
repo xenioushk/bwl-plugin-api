@@ -1,5 +1,9 @@
 ## Changelog
 
+👉 **1.0.3 (22.03.25)**
+
+- Upgraded Actions and Filters API. 🙌
+
 👉 **1.0.2 (17.03.25)**
 
 - Fixed Custom post type API bug. 🐞

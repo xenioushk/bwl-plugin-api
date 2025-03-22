@@ -40,7 +40,9 @@ class ActionsApi
 		if (! empty($this->actions)) {
 
 			foreach ($this->actions as $action) {
-				add_action($action['tag'], $action['callback']);
+				$priority = isset($action['priority']) ? $action['priority'] : 10;
+				$args_count = isset($action['args_count']) ? $action['args_count'] : 1;
+				add_action($action['tag'], $action['callback'], $priority, $args_count);
 			}
 		}
 	}
