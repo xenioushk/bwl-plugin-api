@@ -40,8 +40,8 @@ class FiltersApi
 		if (! empty($this->filters)) {
 
 			foreach ($this->filters as $filter) {
-				$priority = isset($action['priority']) ? $action['priority'] : 10;
-				$args_count = isset($action['args_count']) ? $action['args_count'] : 1;
+				$priority = isset($filter['priority']) ? $filter['priority'] : 10;
+				$args_count = isset($filter['args_count']) ? $filter['args_count'] : 1;
 				add_filter($filter['tag'], $filter['callback'], $priority, $args_count);
 			}
 		}
