@@ -3,6 +3,7 @@
 👉 **1.0.5 (06.04.25)**
 
 - ✅ Fixed: Filters API bug.
+- ❌ Removed: CMB API.
 
 👉 **1.0.4 (22.03.25)**
 
