@@ -1,5 +1,9 @@
 ## Changelog
 
+👉 **1.0.6 (01.05.25)**
+
+- 🔥 Updated: Plugin cpt publicly_queryable parameter.
+
 👉 **1.0.5 (06.04.25)**
 
 - ✅ Fixed: Filters API bug.
