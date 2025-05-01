@@ -148,7 +148,7 @@ class CptApi
 					'slug'       => $cpt['slug'] ?? $cpt['post_type'],
 					'with_front' => false, // before it was true
 				],
-				'publicly_queryable' => true, // turn it to false, if you want to disable generate single page
+				'publicly_queryable' => $cpt['publicly_queryable'] ?? true, // turn it to false, if you want to disable generate single page
 				'capability_type'    => 'post',
 				'has_archive'        => $cpt['has_archive'] ?? true,
 				'hierarchical'       => $cpt['hierarchical'] ?? true,
