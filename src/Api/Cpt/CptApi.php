@@ -6,7 +6,7 @@ namespace Xenioushk\BwlPluginApi\Api\Cpt;
  * Class for custom post type API.
  *
  * @package BwlPluginApi
- * @version 1.0.0
+ * @version 1.0.7
  * @author: Mahbub Alam Khan
  */
 class CptApi
@@ -104,6 +104,7 @@ class CptApi
 					],
 					'show_admin_column' => true,
 					'labels'            => $labels,
+					'meta_box_cb'       => $tax['meta_box_cb'] ?? null // ✅ this enables the hierarchical UI, check baf for callback example.
 				],
 			];
 		}
