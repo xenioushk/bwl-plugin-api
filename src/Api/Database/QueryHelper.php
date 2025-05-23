@@ -1,5 +1,4 @@
 <?php
-
 namespace Xenioushk\BwlPluginApi\Api\Database;
 
 /**
