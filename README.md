@@ -28,11 +28,39 @@ $result = $query_manager_api->insert($data);
 4. Read Data. (Multiple With Complex Condition)
 
 ```php
+/**
+ * Example usage: Simple
+ */
+
+$filters = [
+  'name' => 'Test',
+  'id' => 8,
+  'age >=' => 10,
+  'age <=' => 15,
+];
+
+$data = $crud->get_items(1, 10, $filters, 'age', 'ASC');
+
+/**
+ * Example usage: Advanced
+ */
+
+$filters = [
+  'name' => 'Test',
+  'age' => ['value' => 20, 'operator' => '>='],
+];
+
+$data = $crud->get_items(1, 5, $filters, 'created_at', 'DESC');
+
+/**
+* More example.
+*/
+
 // Default is equal.
 $filters = [
-			'postid'    => $post_id,
-			'post_type' => $post_type,
-		];
+  'postid'    => $post_id,
+  'post_type' => $post_type,
+];
 
 // You can use  Greater than, less than
 $filters['vote_date >='] = [ 'value' => $pvm_filter_start_date, 'operator' => '>=' ];
@@ -43,16 +71,15 @@ $order_by  = 'id';
 $order_dir = 'DESC';
 
 $args = [
-			'page'            => 1, // for pagination support
-			'per_page'        => 5, // no of item per page.
-			'filters'         => $filters,
-			'selected_fields' => "", // default: *. Example: 'id,name,email,age'
-			'order_by'        => $order_by, // Or, any of your table column
-			'order_dir'       => $order_dir, // ASC/DESC
-		];
+  'page'            => 1, // for pagination support
+  'per_page'        => 5, // no of item per page.
+  'filters'         => $filters,
+  'selected_fields' => "", // default: *. Example: 'id,name,email,age'
+  'order_by'        => $order_by, // Or, any of your table column
+  'order_dir'       => $order_dir, // ASC/DESC
+];
 
 $results = $crud->get_items( $args );
-
 ```
 
 @Return: Multiple Rows data.
@@ -66,7 +93,7 @@ $args = [
   'id' => 39
 ];
 
-$result = $query_manager_api->get_item($data);
+$result = $query_manager_api->get_item($args);
 ```
 
 This create a query like the following example

@@ -31,7 +31,6 @@ class QueryManagerApi
         $this->table = $table_name;
     }
 
-
     /**
      * Insert a new item into the database.
      *
@@ -48,30 +47,6 @@ class QueryManagerApi
         }
         return $wpdb->insert_id;
     }
-
-    /**
-     * Example usage: Simple
-     */
-
-    // $filters = [
-    // 'name' => 'Test',
-    // 'id' => 8,
-    // 'age >=' => 10,
-    // 'age <=' => 15,
-    // ];
-
-    // $data = $crud->get_items(1, 10, $filters, 'age', 'ASC');
-
-    /**
-     * Example usage: Advanced
-     */
-
-    // $filters = [
-    // 'name' => 'Test',
-    // 'age' => ['value' => 20, 'operator' => '>='],
-    // ];
-
-    // $data = $crud->get_items(1, 5, $filters, 'created_at', 'DESC');
 
     /**
      * Fetch items with pagination and optional filters.
@@ -93,7 +68,13 @@ class QueryManagerApi
             ], $args
         );
 
-        extract($args); // phpcs:ignore
+        // Extract the arguments
+        $selected_fields = $args['selected_fields'];
+        $page            = $args['page'];
+        $per_page        = $args['per_page'];
+        $filters         = $args['filters'];
+        $order_by        = $args['order_by'];
+        $order_dir       = $args['order_dir'];
 
         global $wpdb;
 
@@ -148,8 +129,6 @@ class QueryManagerApi
         $params[]  = $offset;
 
         $rows = $wpdb->get_results($wpdb->prepare($query_sql, ...$params), ARRAY_A);
-
-        // echo $wpdb->last_query;
 
         return [
             'data'     => $rows,
