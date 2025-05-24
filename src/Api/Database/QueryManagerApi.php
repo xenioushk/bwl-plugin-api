@@ -54,81 +54,124 @@ class QueryManagerApi
      * @param  array $args array of arguments for fetching items.
      * @return array An array containing the fetched items, total count, current page, and items per page.
      */
-    public function get_items($args = [])
-    {
-
+    public function get_items($args = []) {
         $args = array_merge(
             [
-            'selected_fields' => '*',
-            'page'            => 1,
-            'per_page'        => 1,
-            'filters'         => [],
-            'order_by'        => 'ID',
-            'order_dir'       => 'DESC',
-            ], $args
+                'selected_fields' => '*',
+                'page'            => 1,
+                'per_page'        => 999999999,
+                'filters'         => [],
+                'having'          => [],
+                'order_by'        => 'ID',
+                'order_dir'       => 'DESC',
+                'group_by'        => [],
+            ],
+            $args
         );
 
-        // Extract the arguments
         $selected_fields = $args['selected_fields'];
         $page            = $args['page'];
         $per_page        = $args['per_page'];
         $filters         = $args['filters'];
+        $having          = $args['having'];
         $order_by        = $args['order_by'];
         $order_dir       = $args['order_dir'];
+        $group_by        = $args['group_by'];
 
         global $wpdb;
 
         $offset        = ($page - 1) * $per_page;
         $where_clauses = [];
-        $params        = [];
+        $where_params  = [];
 
-        if (! empty($filters)) {
+        if (!empty($filters)) {
             foreach ($filters as $key => $value) {
                 $operator = '=';
                 $field    = $key;
 
-                // If key contains operator (e.g., "age >=")
                 if (preg_match('/^(\w+)\s*(>=|<=|<>|!=|=|>|<)$/', $key, $matches)) {
                     $field    = $matches[1];
                     $operator = $matches[2];
                 }
 
-                // Support format like ['value' => 10, 'operator' => '>']
                 if (is_array($value) && isset($value['value'], $value['operator'])) {
                     $operator = strtoupper($value['operator']);
                     $value    = $value['value'];
                 }
 
-                // Special handling for DATE comparison on DATETIME column
                 if (in_array($field, ['vote_date']) && preg_match('/^\d{4}-\d{2}-\d{2}$/', $value)) {
                     $where_clauses[] = "DATE(`$field`) $operator %s";
                 } else {
                     $where_clauses[] = "`$field` $operator %s";
                 }
 
-                $params[] = $value;
+                $where_params[] = $value;
             }
         }
 
         $where_sql = '';
-        if (! empty($where_clauses)) {
+        if (!empty($where_clauses)) {
             $where_sql = 'WHERE ' . implode(' AND ', $where_clauses);
         }
 
-        // Sanitize order_by and order_dir
+        $group_by_sql = '';
+        if (!empty($group_by)) {
+            if (is_array($group_by)) {
+                $sanitized_group_by = array_map(fn($field) => "`" . preg_replace('/[^\w_]/', '', $field) . "`", $group_by);
+                $group_by_sql = 'GROUP BY ' . implode(', ', $sanitized_group_by);
+            } else {
+                $group_by_sql = 'GROUP BY `' . preg_replace('/[^\w_]/', '', $group_by) . '`';
+            }
+        }
+
+        $having_clauses = [];
+        $having_params  = [];
+
+        foreach ($having as $key => $value) {
+            $operator = '=';
+            $field    = $key;
+
+            if (preg_match('/^(SUM|AVG|COUNT|MIN|MAX)?\(?(\w+)\)?\s*(>=|<=|<>|!=|=|>|<)$/i', $key, $matches)) {
+                $aggregate_func = strtoupper($matches[1]);
+                $field          = $matches[2];
+                $operator       = $matches[3];
+
+                $field_expr = $aggregate_func ? "$aggregate_func(`$field`)" : "`$field`";
+
+                if (is_array($value) && isset($value['value'], $value['operator'])) {
+                    $operator = strtoupper($value['operator']);
+                    $value    = $value['value'];
+                }
+
+                $having_clauses[] = "$field_expr $operator %s";
+                $having_params[]  = $value;
+            }
+        }
+
+        $having_sql = '';
+        if (!empty($having_clauses)) {
+            $having_sql = 'HAVING ' . implode(' AND ', $having_clauses);
+        }
+
         $order_by  = preg_replace('/[^\w_]/', '', $order_by);
         $order_dir = strtoupper($order_dir) === 'ASC' ? 'ASC' : 'DESC';
 
-        // Count total
-        $count_sql = "SELECT COUNT(*) FROM {$this->table} $where_sql";
-        $total     = $wpdb->get_var($wpdb->prepare($count_sql, ...$params));
+        $params_combined = array_merge($where_params, $having_params);
 
-        // Paginated data
-        $query_sql = "SELECT {$selected_fields} FROM {$this->table} $where_sql ORDER BY `$order_by` $order_dir LIMIT %d OFFSET %d";
-        $params[]  = $per_page;
-        $params[]  = $offset;
+        $count_sql = "SELECT COUNT(*) FROM (
+            SELECT 1 FROM {$this->table} $where_sql $group_by_sql $having_sql
+        ) AS grouped_result";
 
-        $rows = $wpdb->get_results($wpdb->prepare($query_sql, ...$params), ARRAY_A);
+        $count_sql_prepared = !empty($params_combined)
+            ? $wpdb->prepare($count_sql, ...$params_combined)
+            : $count_sql;
+
+        $total = $wpdb->get_var($count_sql_prepared);
+
+        $query_sql = "SELECT {$selected_fields} FROM {$this->table} $where_sql $group_by_sql $having_sql ORDER BY `$order_by` $order_dir LIMIT %d OFFSET %d";
+        $query_params = array_merge($params_combined, [$per_page, $offset]);
+
+        $rows = $wpdb->get_results($wpdb->prepare($query_sql, ...$query_params), ARRAY_A);
 
         return [
             'data'     => $rows,
@@ -137,6 +180,8 @@ class QueryManagerApi
             'per_page' => $per_page,
         ];
     }
+
+
 
     /**
      * Fetch single item by ID.

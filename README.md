@@ -82,6 +82,41 @@ $args = [
 $results = $crud->get_items( $args );
 ```
 
+## More arguments example
+
+```php
+// ✅ Example Usage with MIN & MAX
+$args = [
+    'selected_fields' => 'category, SUM(points) as total_points, MAX(points) as max_score, MIN(points) as min_score',
+    'group_by' => ['category'],
+    'having' => [
+        'SUM(points) >'  => ['value' => 100, 'operator' => '>'],
+        'MAX(points) >=' => ['value' => 50, 'operator' => '>='],
+        'MIN(points) <=' => ['value' => 5, 'operator' => '<='],
+    ],
+    'order_by' => 'total_points',
+    'order_dir' => 'DESC',
+    'page' => 1,
+    'per_page' => 20,
+];
+```
+
+```php
+✅ Example Usage with SUM and AVG
+$args = [
+    'selected_fields' => 'category, SUM(points) as total_points, AVG(points) as avg_points',
+    'group_by' => ['category'],
+    'having' => [
+        'SUM(points) >' => ['value' => 100, 'operator' => '>'],
+        'AVG(points) >=' => ['value' => 20, 'operator' => '>='],
+    ],
+    'order_by' => 'total_points',
+    'order_dir' => 'DESC',
+    'page' => 1,
+    'per_page' => 10,
+];
+```
+
 @Return: Multiple Rows data.
 
 5. Read Data. (Single With ID)
