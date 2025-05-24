@@ -167,6 +167,10 @@ $result = $query_manager_api->delete($id);
 
 ## Changelog
 
+👉 **1.0.9 (24.05.25)**
+
+- 🔥 Updated: Database Query API to support SUM,HAVING, MAX, MIN, COUNT.
+
 👉 **1.0.8 (23.05.25)**
 
 - 🚀 Added: Database Query API.
