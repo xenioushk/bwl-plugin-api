@@ -156,7 +156,7 @@ class QueryHelper
 			case 'post_id':
 				return 'post_id = %d';
 			case 'date_range':
-				return "$this->dateTimeColumn BETWEEN CURDATE() - INTERVAL %d DAY AND CURDATE()";
+				return "$this->dateTimeColumn BETWEEN DATE_SUB(NOW(), INTERVAL %d DAY) AND NOW()";
 			default:
 				return $index . ' = %s';
 		}
